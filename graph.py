@@ -1,27 +1,27 @@
-import math
+class Node:
+    def __init__(self, node_id, x, y):
+        # Initialize a node with an id and 2D coordinates
+        self.id = node_id
+        self.x = x
+        self.y = y
+
 
 class Graph:
     def __init__(self):
+        # Initialize graph with node and edge containers
         self.nodes = {}
         self.edges = {}
 
-    def add_node(self, node_id, coord):
-        self.nodes[node_id] = coord
-        if node_id not in self.edges:
-            self.edges[node_id] = []
+    def add_node(self, node_id, x, y):
+        # Add a node object into the graph
+        self.nodes[node_id] = Node(node_id, x, y)
 
-    def add_edge(self, src, dst, cost):
-        if src not in self.edges:
-            self.edges[src] = []
-        self.edges[src].append((dst, cost))
+    def add_edge(self, from_node, to_node, cost):
+        # Add a directed edge with cost between two nodes
+        if from_node not in self.edges:
+            self.edges[from_node] = []
+        self.edges[from_node].append((to_node, cost))
 
-    def neighbors(self, node_id):
+    def get_neighbors(self, node_id):
+        # Return all neighboring nodes and edge costs
         return self.edges.get(node_id, [])
-
-    # Heuristic: Euclidean distance to the nearest destination
-    def heuristic(self, node_id, destinations):
-        x1, y1 = self.nodes[node_id]
-        return min(
-            math.sqrt((x1 - self.nodes[d][0]) ** 2 + (y1 - self.nodes[d][1]) ** 2)
-            for d in destinations
-        )
