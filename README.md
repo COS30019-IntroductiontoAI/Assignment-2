@@ -9,10 +9,11 @@ The implementation supports multiple heuristics (CUS1), including **Euclidean** 
 ---
 
 ## How to run
-
+```bash
 python search.py PathFinder-test.txt GBFS
 python search.py PathFinder-test.txt GBFS euclidean
 python search.py PathFinder-test.txt GBFS manhattan
+```
 
 ## Examples
 Example command:
