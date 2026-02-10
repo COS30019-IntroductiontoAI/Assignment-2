@@ -16,10 +16,9 @@ python search.py PathFinder-test.txt GBFS manhattan
 
 ## Examples
 Example command:
-
-bash
-Copy code
+```bash
 python search.py PathFinder-test.txt GBFS euclidean
+```
 Example output:
 
 ```
