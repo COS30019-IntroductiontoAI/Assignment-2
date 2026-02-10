@@ -1,49 +1,42 @@
 from graph import Graph
 
+# Parse the input file and construct the graph data structure
 def parse_file(filename):
     graph = Graph()
     origin = None
     destinations = []
 
-    with open(filename, "r") as f:
-        lines = [line.strip() for line in f if line.strip()]
+    # Read all non-empty lines from the input file
+    with open(filename, "r") as file:
+        lines = [line.strip() for line in file if line.strip()]
 
-    i = 0
-    while i < len(lines):
-        line = lines[i]
+    section = None
 
-        # Parse nodes
-        if line == "Nodes:":
-            i += 1
-            while i < len(lines) and "(" in lines[i]:
-                node_part, coord_part = lines[i].split(":")
-                node_id = int(node_part.strip())
-                x, y = coord_part.strip()[1:-1].split(",")
-                graph.add_node(node_id, (int(x), int(y)))
-                i += 1
+    # Process each section of the input file
+    for line in lines:
+        if line.endswith(":"):
+            section = line
+            continue
 
-        # Parse edges
-        elif line == "Edges:":
-            i += 1
-            while i < len(lines) and lines[i].startswith("("):
-                edge_part, cost_part = lines[i].split(":")
-                src, dst = edge_part.strip()[1:-1].split(",")
-                graph.add_edge(int(src), int(dst), int(cost_part.strip()))
-                i += 1
+        # Parse node definitions
+        if section == "Nodes:":
+            node_id, coord = line.split(":")
+            x, y = coord.strip()[1:-1].split(",")
+            graph.add_node(int(node_id), int(x), int(y))
 
-        # Parse origin
-        elif line == "Origin:":
-            i += 1
-            origin = int(lines[i])
-            i += 1
+        # Parse edge definitions
+        elif section == "Edges:":
+            nodes, cost = line.split(":")
+            from_node, to_node = nodes.strip()[1:-1].split(",")
+            graph.add_edge(int(from_node), int(to_node), int(cost))
 
-        # Parse destinations
-        elif line == "Destinations:":
-            i += 1
-            destinations = [int(x.strip()) for x in lines[i].split(";")]
-            i += 1
+        # Parse origin node
+        elif section == "Origin:":
+            origin = int(line)
 
-        else:
-            i += 1
+        # Parse destination nodes
+        elif section == "Destinations:":
+            destinations = [int(d) for d in line.split(";")]
 
+    # Return the constructed graph and search parameters
     return graph, origin, destinations

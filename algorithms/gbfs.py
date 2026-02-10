@@ -1,50 +1,54 @@
 import heapq
+from algorithms.cus1 import get_heuristic
 
-class GBFS:
-    def __init__(self, graph, origin, destinations):
-        self.graph = graph
-        self.origin = origin
-        self.destinations = destinations
-        self.nodes_created = 0
 
-    # Greedy Best-First Search
-    def search(self):
-        frontier = []
-        order = 0
+# Greedy Best-First Search using a heuristic function
+def gbfs(graph, start, goal, heuristic_type="euclidean"):
+    # Select the heuristic function based on input
+    heuristic = get_heuristic(heuristic_type)
 
-        heapq.heappush(
-            frontier,
-            (self.graph.heuristic(self.origin, self.destinations),
-             order,
-             self.origin,
-             [self.origin])
-        )
-        self.nodes_created += 1
+    # Priority queue storing nodes ordered by heuristic value
+    frontier = []
+    heapq.heappush(frontier, (0, start))
 
-        visited = set()
+    # Track visited nodes and parent relationships
+    came_from = {}
+    visited = set()
 
-        while frontier:
-            _, _, current, path = heapq.heappop(frontier)
+    # Main GBFS loop
+    while frontier:
+        _, current = heapq.heappop(frontier)
 
-            if current in visited:
-                continue
-            visited.add(current)
+        if current in visited:
+            continue
+        visited.add(current)
 
-            # Goal test
-            if current in self.destinations:
-                return current, self.nodes_created, path
+        # Stop search when the goal is reached
+        if current == goal:
+            return reconstruct_path(came_from, start, goal)
 
-            # Node expansion
-            for neighbor, _ in sorted(self.graph.neighbors(current)):
-                if neighbor not in visited:
-                    order += 1
-                    heapq.heappush(
-                        frontier,
-                        (self.graph.heuristic(neighbor, self.destinations),
-                         order,
-                         neighbor,
-                         path + [neighbor])
-                    )
-                    self.nodes_created += 1
+        # Expand neighbors of the current node
+        for neighbor, _ in graph.get_neighbors(current):
+            if neighbor not in visited:
+                priority = heuristic(
+                    graph.nodes[neighbor],
+                    graph.nodes[goal]
+                )
+                heapq.heappush(frontier, (priority, neighbor))
+                if neighbor not in came_from:
+                    came_from[neighbor] = current
 
-        return None, self.nodes_created, []
+    # Return None if no path is found
+    return None
+
+
+# Reconstruct the path from start to goal using parent links
+def reconstruct_path(came_from, start, goal):
+    path = [goal]
+
+    # Trace back from goal to start
+    while path[-1] != start:
+        path.append(came_from[path[-1]])
+
+    path.reverse()
+    return path
