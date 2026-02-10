@@ -22,11 +22,12 @@ Copy code
 python search.py PathFinder-test.txt GBFS euclidean
 Example output:
 
+```
 5 3
 2 -> 3 -> 5
 4 3
 2 -> 1 -> 4
-
+```
 Each result shows:
 
 - The destination node ID
