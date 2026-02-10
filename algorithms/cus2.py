@@ -1,56 +1,9 @@
 # IDA* - Iterative Deepening A
 import math
 
-# ---------- DATA STRUCTURE ---------- #
-
-# Define the Node class
-class Node:
-  def __init__(self, id, x, y):
-    self.id = id
-    self.x = x
-    self.y = y
-  
-  
-# Define the Graph class
-class Graph:
-  def __init__(self):
-    # Define the node position
-    self.nodes = {
-      1: Node(1, 4, 1),
-      2: Node(2, 2, 2),
-      3: Node(3, 4, 4),
-      4: Node(4, 6, 3),
-      5: Node(5, 5, 6),
-      6: Node(6, 7, 5)
-    }
-
-    # Define the connections between nodes
-    self.edges = {
-      1: [3, 4],
-      2: [1, 3],
-      3: [1, 2, 5, 6],
-      4: [1, 3, 5],
-      5: [3, 4],
-      6: [3]
-    }
-
-    self.cost = {
-      (1, 3): 5,
-      (1, 4): 6,
-      (2, 1): 4,
-      (2, 3): 4,
-      (3, 1): 5,
-      (3, 2): 5,
-      (3, 5): 6,
-      (3, 6): 7,
-      (4, 1): 6,
-      (4, 3): 5,
-      (4, 5): 7,
-      (5, 3): 6,
-      (5, 4): 8,
-      (6, 3): 7,
-    }
-
+# Number of nodes created and the total cost (if needed later)
+node_count = 0
+total_cost = 0
  
 
 # ---------- HEURISTIC ---------- #
@@ -58,44 +11,35 @@ class Graph:
 # Define the heuristic function, the distance to closest goal
 def heuristic(node_id, goal_ids, graph):
   node = graph.nodes[node_id]
-  min_distance = float('inf')
+  best = float("inf")
 
   for goal_id in goal_ids:
-    goal = graph.nodes[goal_id] 
-
+    goal = graph.nodes[goal_id]
+    
     # Euclidean distance
     dx = node.x - goal.x
     dy = node.y - goal.y
-    e_distance = math.sqrt((dx ** 2) + (dy ** 2))
+    dist = math.sqrt(dx * dx + dy * dy)
+    best = min(best, dist)
 
-    if e_distance < min_distance:
-      min_distance = e_distance
-
-  return min_distance
+  return best
 
 
 
 # ---------- EDGE COST ---------- #
 
 # Check the edge cost
-def edge_cost(from_id, to_id, graph):
-  if (from_id, to_id) in graph.cost: 
-    return graph.cost[(from_id, to_id)]
-  return float('inf')
+def edge_cost(a, b, graph):
+  return graph.cost.get((a, b), float("inf"))
 
 
 
 # ---------- IDA* ALGORITHM ---------- #
 
-
-# Number of nodes created and the total cost (if needed later)
-node_count = 0
-total_cost = 0
-
 # Define the search algorithm
 def search(path, g, threshold, goal_ids, graph):
   # Count node created
-  global node_count
+  global node_count, total_cost
   node_count += 1
 
   # Set the current id is the last node found
@@ -109,8 +53,7 @@ def search(path, g, threshold, goal_ids, graph):
     return f
   
   # If the current node is the goal -> solution found
-  if current_id in goal_ids:
-    global total_cost
+  if current_id in goal_ids: 
     total_cost = g
     return "found"
   
@@ -134,21 +77,18 @@ def search(path, g, threshold, goal_ids, graph):
       if result == "found":
         return "found"
       
-      if result < min_threshold:
-        min_threshold = result
-
-      # Backtrack
+      min_threshold = min(min_threshold, result)
       path.pop()
   
   return min_threshold
 
 
 # Define final search
-def IDA_Star():
+def IDA_Star(graph, start_id, goal_ids):
   # Initialization
-  start_id=2
-  goal_ids=[5, 4]
-  graph=Graph()
+  global node_count, total_cost
+  node_count = 0
+  total_cost = 0
 
   # Find the threshold by calculating the h(start)
   threshold = heuristic(start_id, goal_ids, graph)
@@ -159,18 +99,10 @@ def IDA_Star():
     result = search(path, 0, threshold, goal_ids, graph)
 
     if result == "found":
-      return path
+      return path, node_count, total_cost
     
     if result == float('inf'):
-      return "no solution"
+      return None, node_count, total_cost
 
     threshold = result
 
-
-
-# ---------- EXECUTION ---------- #
-
-path = IDA_Star()
-print(f"{path[-1]} {node_count}")
-print(f"{path}")
-print(f"Total cost: {total_cost}")
