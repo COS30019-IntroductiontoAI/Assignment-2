@@ -1,21 +1,22 @@
 import heapq
-from algorithms.cus1 import get_heuristic
+import math
 
 
-# Greedy Best-First Search using a heuristic function
-def gbfs(graph, start, goal, heuristic_type="euclidean"):
-    # Select the heuristic function based on input
-    heuristic = get_heuristic(heuristic_type)
+# Euclidean distance
+def euclidean(node_a, node_b):
+    dx = node_a.x - node_b.x
+    dy = node_a.y - node_b.y
+    return math.sqrt(dx * dx + dy * dy)
 
-    # Priority queue storing nodes ordered by heuristic value
+
+# Greedy Best First Search
+def gbfs(graph, start, goal):
     frontier = []
     heapq.heappush(frontier, (0, start))
 
-    # Track visited nodes and parent relationships
-    came_from = {}
     visited = set()
+    came_from = {}
 
-    # Main GBFS loop
     while frontier:
         _, current = heapq.heappop(frontier)
 
@@ -23,14 +24,12 @@ def gbfs(graph, start, goal, heuristic_type="euclidean"):
             continue
         visited.add(current)
 
-        # Stop search when the goal is reached
         if current == goal:
             return reconstruct_path(came_from, start, goal)
 
-        # Expand neighbors of the current node
         for neighbor, _ in graph.get_neighbors(current):
             if neighbor not in visited:
-                priority = heuristic(
+                priority = euclidean(
                     graph.nodes[neighbor],
                     graph.nodes[goal]
                 )
@@ -38,17 +37,13 @@ def gbfs(graph, start, goal, heuristic_type="euclidean"):
                 if neighbor not in came_from:
                     came_from[neighbor] = current
 
-    # Return None if no path is found
     return None
 
 
-# Reconstruct the path from start to goal using parent links
+# Build path
 def reconstruct_path(came_from, start, goal):
     path = [goal]
-
-    # Trace back from goal to start
     while path[-1] != start:
         path.append(came_from[path[-1]])
-
     path.reverse()
     return path

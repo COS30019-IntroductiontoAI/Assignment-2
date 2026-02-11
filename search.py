@@ -1,42 +1,37 @@
 import sys
 from parser import parse_file
 from algorithms.gbfs import gbfs
+from algorithms.cus1 import cus1
 
 
-# Entry point for running the search program
+# Entry point
 def main():
-    # Validate command-line arguments
     if len(sys.argv) < 3:
-        print("Usage: python search.py <filename> GBFS [euclidean|manhattan]")
+        print("Usage: python search.py <filename> [GBFS|CUS1]")
         return
 
-    # Read input parameters from command line
     filename = sys.argv[1]
     algorithm = sys.argv[2]
-    heuristic = sys.argv[3] if len(sys.argv) > 3 else "euclidean"
 
-    # Parse input file to build the graph and search parameters
     graph, origin, destinations = parse_file(filename)
 
-    # Ensure only GBFS algorithm is executed
-    if algorithm != "GBFS":
-        print("Only GBFS is supported.")
-        return
-
-    # Run GBFS for each destination node
     for goal in destinations:
-        try:
-            path = gbfs(graph, origin, goal, heuristic)
-            if path:
-                print(f"{goal} {len(path)}")
-                print(" -> ".join(map(str, path)))
-            else:
-                print(f"No path found to {goal}")
-        except ValueError as e:
-            print(e)
+        if algorithm == "GBFS":
+            path = gbfs(graph, origin, goal)
+
+        elif algorithm == "CUS1":
+            path = cus1(graph, origin, goal)
+
+        else:
+            print("Unsupported algorithm.")
             return
 
+        if path:
+            print(f"{goal} {len(path)}")
+            print(" -> ".join(map(str, path)))
+        else:
+            print(f"No path found to {goal}")
 
-# Execute main function when the script is run directly
+
 if __name__ == "__main__":
     main()
