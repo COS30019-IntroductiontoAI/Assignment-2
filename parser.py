@@ -1,25 +1,26 @@
-# parser.py
 import re
 
 def read_file(filename, graph):
-    """
-    Đọc file input và cập nhật thông tin vào đối tượng graph.
-    Trả về: (origin, destinations)
-    """
+    # Track which section of the file is currently being read
     current_section = None
+    
+    # Store start node and goal nodes
     origin = None
     destinations = []
 
     try:
+        # Open and read all lines from file
         with open(filename, 'r') as f:
             lines = f.readlines()
 
         for line in lines:
             line = line.strip()
+            
+            # Skip empty lines
             if not line:
                 continue
 
-            # Xác định phần đang đọc (Keywords)
+            # Detect section keywords
             if line.startswith("Nodes:"):
                 current_section = "NODES"
                 continue
@@ -33,7 +34,7 @@ def read_file(filename, graph):
                 current_section = "DESTINATIONS"
                 continue
 
-            # Xử lý dữ liệu từng phần
+            # Process data based on current section
             if current_section == "NODES":
                 # Format: 1: (4,1)
                 match = re.match(r"(\w+):\s*\((\d+),(\d+)\)", line)
@@ -49,16 +50,19 @@ def read_file(filename, graph):
                     graph.add_edge(u, v, float(cost))
 
             elif current_section == "ORIGIN":
-                # Format: 2
+                # Store starting node
                 origin = line.strip()
 
             elif current_section == "DESTINATIONS":
                 # Format: 5; 4
                 dests = line.split(';')
+                
+                # Remove extra spaces from each destination
                 destinations = [d.strip() for d in dests]
 
         return origin, destinations
 
     except FileNotFoundError:
+        # Handle missing input file
         print(f"Error: File {filename} not found.")
         return None, []
