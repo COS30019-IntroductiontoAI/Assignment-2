@@ -1,31 +1,41 @@
-from collections import deque
+# CUS1 - Iterative Deepening Search (IDS)
 
-
-# CUS1 - Uninformed Search (Breadth First Search)
 def cus1(graph, start, goal):
-    frontier = deque([start])      # FIFO queue
-    visited = set([start])         # Track visited nodes
-    came_from = {}                 # Track path
+    depth = 0
 
-    while frontier:
-        current = frontier.popleft()
+    while True:
+        visited = set()
+        path = depth_limited_search(graph, start, goal, depth, visited)
 
-        if current == goal:
-            return reconstruct_path(came_from, start, goal)
+        if path:
+            return path
 
-        for neighbor, _ in graph.get_neighbors(current):
-            if neighbor not in visited:
-                visited.add(neighbor)
-                came_from[neighbor] = current
-                frontier.append(neighbor)
+        depth += 1
+
+
+# Depth-Limited DFS
+def depth_limited_search(graph, current, goal, depth, visited):
+    if depth < 0:
+        return None
+
+    visited.add(current)
+
+    if current == goal:
+        return [current]
+
+    if depth == 0:
+        return None
+
+    # Sort neighbors to ensure consistent traversal order
+    neighbors = sorted(graph.get_neighbors(current), key=lambda x: x[0])
+
+    for neighbor, _ in neighbors:
+        if neighbor not in visited:
+            result = depth_limited_search(
+                graph, neighbor, goal, depth - 1, visited
+            )
+
+            if result:
+                return [current] + result
 
     return None
-
-
-# Build final path
-def reconstruct_path(came_from, start, goal):
-    path = [goal]
-    while path[-1] != start:
-        path.append(came_from[path[-1]])
-    path.reverse()
-    return path
