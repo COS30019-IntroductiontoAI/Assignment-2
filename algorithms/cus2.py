@@ -105,3 +105,7 @@ def IDA_Star(graph, start_id, goal_ids):
       return None, node_count, total_cost
 
     threshold = result
+<<<<<<< HEAD
+=======
+
+>>>>>>> 879cedddbe4853c7966c8501708ff1235209ab2c
