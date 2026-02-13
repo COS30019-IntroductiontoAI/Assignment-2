@@ -1,27 +1,65 @@
 import sys
-from parser import parse_file
-from algorithms.gbfs import GBFS
+from parser import parse_problem_file
+from algorithms.cus2 import IDA_Star
+from algorithms.gbfs import gbfs
+from algorithms.cus1 import cus1
+from algorithms.bfs import bfs
+from algorithms.dfs import dfs
+from algorithms.astar import astar_search
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python search.py <filename> <method>")
-        return
+  # Check whether the command line argument is acceptable or not
+  if len(sys.argv) != 3:
+    print("The correct format is 'python search.py <file_name> <method>'!")
+    return
 
-    filename = sys.argv[1]
-    method = sys.argv[2].upper()
+  # Read the argument from the command line
+  filename = sys.argv[1]
+  method = sys.argv[2].lower()
 
-    graph, origin, destinations = parse_file(filename)
+  # Parse the problem first
+  graph, start_id, goal_ids = parse_problem_file(filename)
 
-    if method != "GBFS":
-        print("Only GBFS is supported in this version.")
-        return
+  path = []
+  node_count = 0
+  total_cost = 0
 
-    solver = GBFS(graph, origin, destinations)
-    goal, nodes_created, path = solver.search()
+  # Solve and return the result
+  if method == "dfs": 
+    path, node_count, total_cost = dfs(graph, start_id, goal_ids)
 
+  elif method == 'bfs':
+    path, node_count, total_cost = bfs(graph, start_id, goal_ids)
+
+  elif method == 'gbfs':
+    path, node_count, total_cost = gbfs(graph, start_id, goal_ids)
+
+  elif method == 'as':
+    path, node_count, total_cost = astar_search(graph, start_id, goal_ids)
+
+  elif method == 'cus1':
+    path, node_count, total_cost = cus1(graph, start_id, goal_ids)
+
+  elif method == 'cus2' or method == 'idas':
+    path, node_count, total_cost = IDA_Star(graph, start_id, goal_ids)
+
+  else:
+    print("Unknown method!")
+    return
+
+  # Display result
+  if not path:
     print(f"{filename} {method}")
-    print(f"{goal} {nodes_created}")
-    print(" -> ".join(map(str, path)))
+    print("No solution")
+    return
 
-if __name__ == "__main__":
-    main()
+  goal = path[-1]
+
+  print(f"{filename} {method}")
+  print(f"{goal} {node_count} {total_cost}")
+  print(" ".join(map(str, path)))
+
+
+   
+if __name__ == '__main__':
+  main()

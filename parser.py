@@ -1,49 +1,62 @@
 from graph import Graph
 
-def parse_file(filename):
-    graph = Graph()
-    origin = None
-    destinations = []
+# Parse problem from txt file
+def parse_problem_file(filename):
+  graph = Graph()
+  start_id = None
+  goal_ids = []
 
-    with open(filename, "r") as f:
-        lines = [line.strip() for line in f if line.strip()]
+  section = None
 
-    i = 0
-    while i < len(lines):
-        line = lines[i]
+  # Open the file from command line
+  with open(filename, "r") as f:
+    for line in f:
+      line = line.strip()
 
-        # Parse nodes
-        if line == "Nodes:":
-            i += 1
-            while i < len(lines) and "(" in lines[i]:
-                node_part, coord_part = lines[i].split(":")
-                node_id = int(node_part.strip())
-                x, y = coord_part.strip()[1:-1].split(",")
-                graph.add_node(node_id, (int(x), int(y)))
-                i += 1
+      # If blank, continue
+      if not line: 
+        continue
+      
+      # Mark each section with their name
+      if line.startswith("Nodes:"): 
+        section = "nodes"
+        continue
+      elif line.startswith("Edges:"):
+        section = "edges"
+        continue
+      elif line.startswith("Origin:"):
+        section = "origin"
+        continue
+      elif line.startswith("Destinations:"):
+        section = "dest"
+        continue
 
-        # Parse edges
-        elif line == "Edges:":
-            i += 1
-            while i < len(lines) and lines[i].startswith("("):
-                edge_part, cost_part = lines[i].split(":")
-                src, dst = edge_part.strip()[1:-1].split(",")
-                graph.add_edge(int(src), int(dst), int(cost_part.strip()))
-                i += 1
+      # Extract the node number and coordinate
+      if section == "nodes":
+        # 1: (4,1)
+        left, right = line.split(":")
+        node_id = int(left.strip())
 
-        # Parse origin
-        elif line == "Origin:":
-            i += 1
-            origin = int(lines[i])
-            i += 1
+        coords = right.strip().replace("(", "").replace(")", "")
+        x, y = coords.split(",") 
+        graph.add_node(node_id, int(x), int(y))
 
-        # Parse destinations
-        elif line == "Destinations:":
-            i += 1
-            destinations = [int(x.strip()) for x in lines[i].split(";")]
-            i += 1
+      # Extract the edges path and its cost
+      elif section == "edges":
+        # (2,1): 4
+        left, right = line.split(":")
+        node_ids = left.strip().replace("(", "").replace(")", "")
+        a, b = node_ids.split(",")
+        
+        cost = int(right.strip())
+        graph.add_edge(int(a), int(b), cost)
 
-        else:
-            i += 1
+      # Extract the origin node
+      elif section == "origin":
+        start_id = int(line)
 
-    return graph, origin, destinations
+      # Extract the destination nodes
+      elif section == "dest":
+        goal_ids = [int(x.strip()) for x in line.split(";")]
+
+  return graph, start_id, goal_ids

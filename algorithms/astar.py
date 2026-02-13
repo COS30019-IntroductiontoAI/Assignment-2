@@ -17,7 +17,7 @@ class SearchNode:
         self.g = g_cost               # cost from origin to this node
         self.h = h_cost               # heuristic estimate to goal
         self.f = g_cost + h_cost      # evaluation function
-        self.order = insertion_order # used for tie-breaking
+        self.order = insertion_order  # used for tie-breaking
 
     def __lt__(self, other):
         """
@@ -64,14 +64,38 @@ def astar_search(graph, origin, destinations):
         # Goal test: stop immediately when a destination is reached
         if current_node.state in destinations:
             return (
-                current_node.state,
+                reconstruct_path(current_node),
                 generated_node_count,
-                reconstruct_path(current_node)
+                current_node.g
             )
+            
+        if hasattr(graph, 'get_neighbors'):
+            neighbors_raw = graph.get_neighbors(current_node.state)
+        elif hasattr(graph, 'neighbors'):
+            neighbors_raw = graph.neighbors(current_node.state)
+        else:
+            try:
+                neighbors_raw = graph.edges.get(current_node.state, [])
+            except Exception:
+                neighbors_raw = []
+
+        if neighbors_raw and isinstance(neighbors_raw[0], tuple):
+            neighbors_raw.sort(key=lambda x: int(x[0]))
+        else:
+            neighbors_raw.sort(key=lambda x: int(x))
 
         # Expand current node (tree-based: always generate new nodes)
-        for (child_state, cost) in graph.adjacency[current_node.state]:
+        for item in neighbors_raw:
             insertion_order += 1
+
+            if isinstance(item, tuple):
+                child_state = item[0]
+                cost = item[1]
+            else:
+                child_state = item
+                cost = 0
+                if hasattr(graph, 'cost') and graph.cost is not None:
+                    cost = graph.cost.get((current_node.state, child_state), 0)
 
             child_g = current_node.g + cost
             child_h = heuristic(graph.nodes[child_state], graph, destinations)
@@ -88,4 +112,4 @@ def astar_search(graph, origin, destinations):
             generated_node_count += 1
 
     # No destination reachable
-    return None, generated_node_count, []
+    return [], generated_node_count, 0
