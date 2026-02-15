@@ -92,4 +92,4 @@ Edges:
 Origin:
 1
 Destinations:
-20
+4; 13; 20
