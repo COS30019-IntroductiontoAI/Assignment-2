@@ -10,7 +10,6 @@ total_cost = 0
 
 # Define the heuristic function, the distance to closest goal
 def heuristic(node_id, goal_ids, graph):
-  # Thêm try-except và getattr để an toàn với cấu trúc graph mới
   try:
     if not hasattr(graph, 'nodes') or node_id not in graph.nodes:
       return 0
@@ -34,11 +33,11 @@ def heuristic(node_id, goal_ids, graph):
 
 # ---------- EDGE COST ---------- #
 
-# Check the edge cost (Hàm này giữ lại làm fallback cho an toàn)
+# Check the edge cost
 def edge_cost(a, b, graph):
   if hasattr(graph, 'cost') and graph.cost is not None:
     return graph.cost.get((a, b), float("inf"))
-  return 0 # Nếu graph không có dictionary cost thì trả về 0
+  return 0
 
 
 # ---------- IDA* ALGORITHM ---------- #
@@ -66,7 +65,7 @@ def search(path, g, threshold, goal_ids, graph):
   
   min_threshold = float('inf')
 
-  # Checking the neighbor nodes from graph (Tương thích với cấu trúc graph mới)
+  # Checking the neighbor nodes from graph
   if hasattr(graph, 'get_neighbors'):
     neighbors_raw = graph.get_neighbors(current_id)
   elif hasattr(graph, 'neighbors'):
@@ -77,14 +76,13 @@ def search(path, g, threshold, goal_ids, graph):
     except:
         neighbors_raw = []
 
-  # Sắp xếp neighbors để kết quả duyệt đồng nhất với các thuật toán khác
+  # Arrange neighors
   if neighbors_raw and isinstance(neighbors_raw[0], tuple):
     neighbors_raw.sort(key=lambda x: int(x[0]))
   else:
     neighbors_raw.sort(key=lambda x: int(x))
 
   for item in neighbors_raw:
-    # Tách id và cost một cách an toàn do cấu trúc mới trả về tuple
     if isinstance(item, tuple):
       neighbor_id = item[0]
       step_cost = item[1]
@@ -94,7 +92,6 @@ def search(path, g, threshold, goal_ids, graph):
 
     # Avoid cycle loop
     if neighbor_id not in path:
-      # Calculate the cost from current node to neighbor (đã được tính ở step_cost)
       
       # Add the neighbor node to become the current node
       path.append(neighbor_id)
