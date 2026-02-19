@@ -22,6 +22,8 @@ class Graph:
         self.nodes = {}
         self.edges = {}
 
+
+
     # -------------------------
     # Node & Edge Construction
     # -------------------------
@@ -39,29 +41,25 @@ class Graph:
 
         self.edges[from_node].append((to_node, cost))
 
+
+
     # -------------------------
     # Graph Query Functions
     # -------------------------
 
     def get_neighbors(self, node_id):
-        """
-        Returns list of (neighbor_id, cost)
-        """
+        # Returns list of (neighbor_id, cost)
         return self.edges.get(node_id, [])
 
     def get_cost(self, from_node, to_node):
-        """
-        Returns cost of edge from_node -> to_node
-        """
+        # Returns cost of edge from_node -> to_node
         for neighbor, cost in self.edges.get(from_node, []):
             if neighbor == to_node:
                 return cost
         return float('inf')
 
     def get_coordinates(self, node_id):
-        """
-        Returns (x, y) coordinates of node
-        """
+        # Returns (x, y) coordinates of node
         node = self.nodes.get(node_id)
         if node:
             return (node.x, node.y)

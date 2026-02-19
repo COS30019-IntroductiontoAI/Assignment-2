@@ -45,7 +45,6 @@ def dfs(graph, start_node, goal_nodes):
             neighbors.sort(key=lambda x: int(x), reverse=True)
         
         for neighbor in neighbors:
-            # Tách id và cost một cách an toàn
             if isinstance(neighbor, tuple):
                 next_node = neighbor[0]
                 step_cost = neighbor[1]
