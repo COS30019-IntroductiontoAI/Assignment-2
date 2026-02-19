@@ -56,7 +56,8 @@ class GBFS:
 
         while frontier:
             # Pop the node with the smallest heuristic from the queue
-            h_val, _, current, path, current_cost = heapq.heappop(frontier)
+            h_val, _, _, current, path, current_cost = heapq.heappop(frontier)
+
 
             if current in visited:
                 continue
