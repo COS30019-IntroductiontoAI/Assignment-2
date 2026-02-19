@@ -38,7 +38,7 @@ def main():
     elif method == "as":
         path, node_count, total_cost = astar_search(graph, start_id, goal_ids)
 
-    elif method == "cus1":
+    elif method == "cus1" or method == "ids":
         path, node_count, total_cost = cus1(graph, start_id, goal_ids)
 
     elif method == "cus2" or method == "idas":
@@ -57,7 +57,7 @@ def main():
     goal = path[-1]
 
     print(f"{filename} {method}")
-    print(f"{goal} {node_count} {total_cost}")
+    print(f"{goal} {node_count}")
     print(" ".join(map(str, path)))
 
 
