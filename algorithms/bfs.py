@@ -13,19 +13,17 @@ def bfs(graph, start_node, goal_nodes):
     # Track total cost to reach each node
     cost_so_far = {start_node: 0}
     
-    # Count how many nodes are explored
-    explored_count = 0
+    created_count = 1
 
     while queue:
         # Remove node from front of queue (FIFO)
         current_node = queue.popleft()
-        explored_count += 1
         
         # Check if current node is a goal
         if current_node in goal_nodes:
             path = reconstruct_path(came_from, current_node)
             total_cost = cost_so_far[current_node]
-            return path, explored_count, total_cost
+            return path, created_count, total_cost
         
         # Get neighbors of the current node from the graph
         neighbors = graph.get_neighbors(current_node)
@@ -49,12 +47,14 @@ def bfs(graph, start_node, goal_nodes):
                 came_from[next_node] = current_node
                 cost_so_far[next_node] = cost_so_far[current_node] + step_cost
                 queue.append(next_node)
+                
+                created_count += 1
 
     # Return if no path is found
-    return [], explored_count, 0
+    return [], created_count, 0
 
 def reconstruct_path(came_from, current):
-    """Rebuild path from goal to start"""
+    #Rebuild path from goal to start
     path = []
     
     # Trace back using parent links
