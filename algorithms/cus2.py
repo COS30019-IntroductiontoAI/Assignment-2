@@ -8,7 +8,6 @@ total_cost = 0
 
 # ---------- HEURISTIC ---------- #
 
-
 # Define the heuristic function, the distance to closest goal
 def heuristic(node_id, goal_ids, graph):
     try:
@@ -27,15 +26,16 @@ def heuristic(node_id, goal_ids, graph):
                 dist = math.sqrt(dx * dx + dy * dy)
                 best = min(best, dist)
 
-        return best if best != float("inf") else 0
+        # Since we are counting number of moves,
+        # heuristic must not overestimate the remaining moves
+        return int(best) if best != float("inf") else 0
     except Exception:
         return 0
 
 
 # ---------- EDGE COST ---------- #
 
-
-# Check the edge cost
+# Check the edge cost -> Use for least cost strategy
 def edge_cost(a, b, graph):
     if hasattr(graph, "cost") and graph.cost is not None:
         return graph.cost.get((a, b), float("inf"))
@@ -43,7 +43,6 @@ def edge_cost(a, b, graph):
 
 
 # ---------- IDA* ALGORITHM ---------- #
-
 
 # Define the search algorithm
 def search(path, g, threshold, goal_ids, graph):
@@ -63,7 +62,7 @@ def search(path, g, threshold, goal_ids, graph):
 
     # If the current node is the goal -> solution found
     if current_id in goal_ids:
-        total_cost = g
+        total_cost = g  # Number of moves
         return "found"
 
     min_threshold = float("inf")
@@ -100,7 +99,8 @@ def search(path, g, threshold, goal_ids, graph):
             path.append(neighbor_id)
 
             # Repeat the process until find the solution
-            result = search(path, g + step_cost, threshold, goal_ids, graph)
+            # Each move counts as 1 (least moves objective)
+            result = search(path, g + 1, threshold, goal_ids, graph)
 
             if result == "found":
                 return "found"
