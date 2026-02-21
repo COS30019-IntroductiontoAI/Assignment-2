@@ -2,14 +2,20 @@ import heapq
 from utils import heuristic, reconstruct_path
 
 
-class SearchNode:
-    """
-    Represents a node in the SEARCH TREE.
+def is_state_in_ancestor_chain(node, state):
+    # Return True if state already exists on current path
+    # from root to the current node.
+    current = node
+    while current is not None:
+        if current.state == state:
+            return True
+        current = current.parent
+    return False
 
-    IMPORTANT:
-    - This is NOT a graph node
-    - Multiple SearchNodes may refer to the same graph state
-    """
+
+class SearchNode:
+    # Search-tree node used in the frontier heap.
+    # Different SearchNodes may reference the same graph state.
 
     def __init__(self, state, parent, g_cost, h_cost, insertion_order):
         self.state = state            # graph node ID
@@ -20,26 +26,14 @@ class SearchNode:
         self.order = insertion_order  # used for tie-breaking
 
     def __lt__(self, other):
-        """
-        Priority comparison for the frontier (min-heap).
-
-        Tie-breaking rules:
-        1. Smaller f(n)
-        2. Smaller node ID
-        3. Earlier insertion order
-        """
+        # Heap priority uses strict tie-break order.
+        # Compare by f(n), then state id, then insertion order.
         return (self.f, self.state, self.order) < (other.f, other.state, other.order)
 
 
 def astar_search(graph, origin, destinations):
-    """
-    Perform tree-based A* search.
-
-    Rules strictly follow the assignment:
-    - No closed list
-    - No cost update
-    - Stop when ANY destination is reached
-    """
+    # Tree-based A*: no closed list, no global cost updates.
+    # Stop at first goal popped; avoid only branch-local cycles.
 
     frontier = []                    # priority queue of SearchNodes
     generated_node_count = 0         # counts ALL generated search nodes
@@ -69,6 +63,8 @@ def astar_search(graph, origin, destinations):
                 current_node.g
             )
             
+        # Read outgoing edges for current state.
+        # Keep fallbacks for compatible graph interfaces.
         if hasattr(graph, 'get_neighbors'):
             neighbors_raw = graph.get_neighbors(current_node.state)
         elif hasattr(graph, 'neighbors'):
@@ -79,15 +75,17 @@ def astar_search(graph, origin, destinations):
             except Exception:
                 neighbors_raw = []
 
+        # Enforce deterministic expansion order required by spec.
+        # Smaller node id is expanded first when other factors tie.
         if neighbors_raw and isinstance(neighbors_raw[0], tuple):
             neighbors_raw.sort(key=lambda x: int(x[0]))
         else:
             neighbors_raw.sort(key=lambda x: int(x))
 
-        # Expand current node (tree-based: always generate new nodes)
+        # Generate children in ascending node-id order.
         for item in neighbors_raw:
-            insertion_order += 1
-
+            # Graph format is usually (neighbor, edge_cost).
+            # The else path keeps compatibility with other layouts.
             if isinstance(item, tuple):
                 child_state = item[0]
                 cost = item[1]
@@ -97,9 +95,18 @@ def astar_search(graph, origin, destinations):
                 if hasattr(graph, 'cost') and graph.cost is not None:
                     cost = graph.cost.get((current_node.state, child_state), 0)
 
+            # Skip states already on the current branch.
+            if is_state_in_ancestor_chain(current_node, child_state):
+                continue
+
+            # Evaluate child using standard A* score: f = g + h.
+            # g is real path cost, h estimates distance to nearest goal.
             child_g = current_node.g + cost
             child_h = heuristic(graph.nodes[child_state], graph, destinations)
 
+            # Increase order only when a child is actually generated.
+            # This preserves chronological tie-break among equal priorities.
+            insertion_order += 1
             child_node = SearchNode(
                 state=child_state,
                 parent=current_node,

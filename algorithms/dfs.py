@@ -1,3 +1,6 @@
+from utils import reconstruct_path_from_came_from
+
+
 def dfs(graph, start_node, goal_nodes):
     # Initialize stack with start node
     stack = [start_node]
@@ -25,7 +28,7 @@ def dfs(graph, start_node, goal_nodes):
         
         # Check if current node is a goal
         if current_node in goal_nodes:
-            path = reconstruct_path(came_from, current_node)
+            path = reconstruct_path_from_came_from(came_from, current_node)
             total_cost = cost_so_far[current_node]
             return path, created_count, total_cost
 
@@ -57,16 +60,3 @@ def dfs(graph, start_node, goal_nodes):
 
     # Return if no path is found
     return [], created_count, 0
-
-def reconstruct_path(came_from, current):
-    #Rebuild path from goal to start
-    path = []
-    
-    # Trace back using parent links
-    while current is not None:
-        path.append(current)
-        current = came_from[current]
-        
-    # Reverse to get path from start to goal
-    path.reverse()
-    return path
