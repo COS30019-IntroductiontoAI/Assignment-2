@@ -2,40 +2,41 @@
 
 def cus1(graph, start, goal_ids):
     depth = 0
-    # Use a dictionary to track explored nodes across recursive calls
-    stats = {'nodes_explored': 0} 
     
-    # Maximum depth limit to prevent infinite loops if no path exists
-    max_depth = 1000 
+    # Count nodes generated (start node counts as 1)
+    stats = {'nodes_generated': 1}
+
+    max_depth = 1000
 
     while depth < max_depth:
-        # Call Depth-Limited Search (DLS)
-        # Initialize path as [start] and cost as 0
-        path, total_cost = depth_limited_search(graph, start, goal_ids, depth, [start], 0, stats)
+        path, total_cost = depth_limited_search(
+            graph,
+            start,
+            goal_ids,
+            depth,
+            [start],
+            0,
+            stats
+        )
 
         if path is not None:
-            return path, stats['nodes_explored'], total_cost
+            return path, stats['nodes_generated'], total_cost
 
         depth += 1
-        
-    # No path found
-    return [], stats['nodes_explored'], 0
+
+    return [], stats['nodes_generated'], 0
 
 
-# Depth-Limited Search
 def depth_limited_search(graph, current, goal_ids, depth, current_path, current_cost, stats):
-    # Increment explored count each time the function is called
-    stats['nodes_explored'] += 1
 
-    # Goal test: check if the current node is a destination
+    # Goal test
     if current in goal_ids:
         return current_path, current_cost
 
-    # Reached the depth limit for the current iteration
     if depth == 0:
         return None, 0
 
-    # Get neighbors (Support both method names for compatibility)
+    # Get neighbors
     if hasattr(graph, 'get_neighbors'):
         neighbors_raw = graph.get_neighbors(current)
     elif hasattr(graph, 'neighbors'):
@@ -43,14 +44,14 @@ def depth_limited_search(graph, current, goal_ids, depth, current_path, current_
     else:
         neighbors_raw = []
 
-    # Safely sort neighbors (Ascending order) handling tuples
+    # Sort ascending
     if neighbors_raw and isinstance(neighbors_raw[0], tuple):
         neighbors_raw.sort(key=lambda x: int(x[0]))
     else:
         neighbors_raw.sort(key=lambda x: int(x))
 
     for item in neighbors_raw:
-        # Safely extract node id and step cost
+
         if isinstance(item, tuple):
             neighbor = item[0]
             step_cost = item[1]
@@ -58,20 +59,22 @@ def depth_limited_search(graph, current, goal_ids, depth, current_path, current_
             neighbor = item
             step_cost = 0
 
-        # Cycle avoidance: only visit nodes not currently in the path
+        # Avoid cycle
         if neighbor not in current_path:
-            # Recursively search deeper
+
+            # ✅ COUNT NODE GENERATED HERE
+            stats['nodes_generated'] += 1
+
             result_path, result_cost = depth_limited_search(
-                graph, 
-                neighbor, 
-                goal_ids, 
-                depth - 1, 
-                current_path + [neighbor], 
-                current_cost + step_cost, 
+                graph,
+                neighbor,
+                goal_ids,
+                depth - 1,
+                current_path + [neighbor],
+                current_cost + step_cost,
                 stats
             )
 
-            # If a path to the goal is found in this branch, return it immediately
             if result_path is not None:
                 return result_path, result_cost
 
