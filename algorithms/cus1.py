@@ -61,8 +61,6 @@ def depth_limited_search(graph, current, goal_ids, depth, current_path, current_
 
         # Avoid cycle
         if neighbor not in current_path:
-
-            # ✅ COUNT NODE GENERATED HERE
             stats['nodes_generated'] += 1
 
             result_path, result_cost = depth_limited_search(
