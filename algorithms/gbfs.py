@@ -39,7 +39,8 @@ class GBFS:
         frontier = []
         order = 0
 
-        # Push to heap: (Heuristic, order, node_id, path, current_cost)
+        # Push to heap:
+        # (heuristic, node_id_key, insertion_order, node_id, path, current_cost)
         heapq.heappush(
             frontier,
             (calculate_heuristic(self.graph, self.origin, self.destinations),
@@ -56,7 +57,7 @@ class GBFS:
 
         while frontier:
             # Pop the node with the smallest heuristic from the queue
-            h_val, _, _, current, path, current_cost = heapq.heappop(frontier)
+            _, _, _, current, path, current_cost = heapq.heappop(frontier)
 
 
             if current in visited:

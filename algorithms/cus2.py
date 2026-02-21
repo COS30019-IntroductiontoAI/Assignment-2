@@ -78,7 +78,7 @@ def search(path, g, threshold, goal_ids, graph):
         except:
             neighbors_raw = []
 
-    # Arrange neighors
+    # Arrange neighbors
     if neighbors_raw and isinstance(neighbors_raw[0], tuple):
         neighbors_raw.sort(key=lambda x: int(x[0]))
     else:

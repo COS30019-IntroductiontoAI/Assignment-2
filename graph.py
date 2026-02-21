@@ -1,8 +1,6 @@
 class Node:
-    """
-    Represents a node in the graph.
-    Stores only problem data (id and coordinates).
-    """
+    # Represents a node in the graph.
+    # Stores only problem data (id and coordinates).
 
     def __init__(self, node_id, x, y):
         self.id = node_id
@@ -11,12 +9,9 @@ class Node:
 
 
 class Graph:
-    """
-    Directed weighted graph using adjacency list.
-
-    self.nodes[node_id] = Node object
-    self.edges[node_id] = [(neighbor_id, cost), ...]
-    """
+    # Directed weighted graph using adjacency list.
+    # self.nodes[node_id] = Node object
+    # self.edges[node_id] = [(neighbor_id, cost), ...]
 
     def __init__(self):
         self.nodes = {}
@@ -24,10 +19,7 @@ class Graph:
 
 
 
-    # -------------------------
     # Node & Edge Construction
-    # -------------------------
-
     def add_node(self, node_id, x, y):
         self.nodes[node_id] = Node(node_id, x, y)
         if node_id not in self.edges:
@@ -43,10 +35,7 @@ class Graph:
 
 
 
-    # -------------------------
     # Graph Query Functions
-    # -------------------------
-
     def get_neighbors(self, node_id):
         # Returns list of (neighbor_id, cost)
         return self.edges.get(node_id, [])
