@@ -182,12 +182,12 @@ We created **10 test cases** covering different scenarios.
 | test1_simple_cycle | Cycle handling |
 | test2_priority_trap_cycle | Deep misleading branch |
 | test3_undirected_cycle | Realistic weighted graph |
-| test4_local_maximum_minimum_trap | Greedy trap scenario |
+| test4_local_max_min_trap | Greedy trap scenario |
 | test5_cost_trap | Cost deception scenario |
-| test6_complex_multiplegoal_trap | Multiple goals + trap |
+| test6_complex_multigoal_trap | Multiple goals + trap |
 | test7_disconnected_graph | No path available |
 | test8_start_is_goal | Origin equals destination |
-| test9_all_else_is_equal | Tie-breaking behavior |
+| test9_all_else_equal | Tie-breaking behavior |
 | test10_complex_map | Large realistic map |
 
 ## Test Design Coverage
