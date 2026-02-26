@@ -6,8 +6,6 @@ node_count = 0
 total_cost = 0
 
 
-# ---------- HEURISTIC ---------- #
-
 # Define the heuristic function
 # Since we are solving least moves,
 # heuristic must estimate remaining number of moves.
@@ -15,8 +13,6 @@ total_cost = 0
 def heuristic(node_id, goal_ids, graph):
     return 0 
 
-
-# ---------- IDA* ALGORITHM ---------- #
 
 # Define the search algorithm
 def search(path, g, threshold, goal_ids, graph):
