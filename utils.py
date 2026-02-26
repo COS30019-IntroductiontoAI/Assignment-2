@@ -1,4 +1,5 @@
 import math
+from graph import Graph
 
 
 def euclidean_distance(node1, node2):
@@ -21,6 +22,20 @@ def heuristic(node, graph, destinations):
         euclidean_distance(node, graph.nodes[goal])
         for goal in destinations
     )
+
+
+def get_max_edge_length(graph: Graph):
+    # Use for least moves strategy of CUS2 - IDA*
+    # If the longest any single edge can "cover" in distance is X
+    # Then the fewest moves needed to cover remaining distance is distance / X
+    max_len = 0
+    for from_id in graph.edges:
+        for (to_id, cost) in graph.edges[from_id]:
+            x1, y1 = graph.get_coordinates(from_id)
+            x2, y2 = graph.get_coordinates(to_id)
+            dist = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
+            max_len = max(max_len, dist)
+    return max_len
 
 
 def reconstruct_path(search_node):
