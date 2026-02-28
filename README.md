@@ -126,6 +126,20 @@ CUS1
 CUS2
 ```
 
+For convenience a batch script **run_all_tests.bat** is provided in the project root.  It automates execution of every algorithm against all ten test cases and prints the results in a Markdown-style table.  To use it, simply run:
+
+```bat
+run_all_tests.bat
+```
+
+You can redirect its output to a file if you want to save the table:
+
+```bat
+run_all_tests.bat > results.md
+```
+
+(The script assumes `python` is on the PATH and `search.py` is in the same directory.)
+
 
 ---
 
