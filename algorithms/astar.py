@@ -31,7 +31,7 @@ class SearchNode:
         return (self.f, self.state, self.order) < (other.f, other.state, other.order)
 
 
-def astar_search(graph, origin, destinations):
+def astar(graph, origin, destinations):
     # Tree-based A*: no closed list, no global cost updates.
     # Stop at first goal popped; avoid only branch-local cycles.
 

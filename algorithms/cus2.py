@@ -94,7 +94,7 @@ def search(path, g, threshold, goal_ids, graph, max_edge):
 
 
 # Define final search entry point
-def IDA_Star(graph, start_id, goal_ids):
+def cus2(graph, start_id, goal_ids):
     global node_count, total_cost
     node_count = 0
     total_cost = 0

@@ -1,11 +1,11 @@
 import sys
 from parser import parse_problem_file
-from algorithms.cus2 import IDA_Star
+from algorithms.cus2 import cus2
 from algorithms.gbfs import gbfs
 from algorithms.cus1 import cus1
 from algorithms.bfs import bfs
 from algorithms.dfs import dfs
-from algorithms.astar import astar_search
+from algorithms.astar import astar
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
 
     path = []
     node_count = 0
-    total_cost = 0
+    total_cost = 0 # Total cost for testing purpose
 
     # Solve and return the result
     if method == "dfs":
@@ -36,13 +36,13 @@ def main():
         path, node_count, total_cost = gbfs(graph, start_id, goal_ids)
 
     elif method == "as":
-        path, node_count, total_cost = astar_search(graph, start_id, goal_ids)
+        path, node_count, total_cost = astar(graph, start_id, goal_ids)
 
     elif method == "cus1" or method == "ids":
         path, node_count, total_cost = cus1(graph, start_id, goal_ids)
 
     elif method == "cus2" or method == "idas":
-        path, node_count, total_cost = IDA_Star(graph, start_id, goal_ids)
+        path, node_count, total_cost = cus2(graph, start_id, goal_ids)
 
     else:
         print("Unknown method!")
